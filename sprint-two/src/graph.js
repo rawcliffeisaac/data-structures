@@ -1,15 +1,34 @@
-
-
 // Instantiate a new graph
 var Graph = function() {
+  this.counter = 0;
+  this.storage = {};
 };
+
+//{counter: 0, storage: {0:{value: node}}}
+
+// {'1': {values = node, edges:[]},
+// '2': obj
+// }
+
+
+// var Node = function() {
+//   //incorporate counter in new object's key
+// }
 
 // Add a node to the graph, passing in the node's value.
 Graph.prototype.addNode = function(node) {
+  this.storage[this.counter] = {value: node, edges:[]};
+  this.counter++;
 };
 
 // Return a boolean value indicating if the value passed to contains is represented in the graph.
 Graph.prototype.contains = function(node) {
+  for (var key in this.storage) {
+    if (this.storage[key].value === node) {
+      return true;
+    }
+  }
+  return false;
 };
 
 // Removes a node from the graph.
