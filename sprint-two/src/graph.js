@@ -6,18 +6,9 @@ var Graph = function() {
 
 //{counter: 0, storage: {0:{value: node}}}
 
-// {'1': {values = node, edges:[]},
-// '2': obj
-// }
-
-
-// var Node = function() {
-//   //incorporate counter in new object's key
-// }
-
 // Add a node to the graph, passing in the node's value.
 Graph.prototype.addNode = function(node) {
-  this.storage[this.counter] = {value: node, edges:[]};
+  this.storage[this.counter] = {value: node, edges: [] };
   this.counter++;
 };
 
@@ -33,6 +24,21 @@ Graph.prototype.contains = function(node) {
 
 // Removes a node from the graph.
 Graph.prototype.removeNode = function(node) {
+  for (let key in this.storage) {
+    if (this.storage[key].value === node) {
+      let currNode = this.storage[key];
+      for (let i = 0; i < currNode.edges.length; i++) {
+        let currEdge = currNode.edges[i];
+        for (let j = 0; j < this.storage[currEdge].edges.length; j++) {
+          if (this.storage[currEdge].edges[j] === currNode) {
+            this.storage[currEdge].edges.splice(j, 1);
+            break;
+          }
+        }
+      }
+      delete this.storage[key];
+    }
+  }
 };
 
 // Returns a boolean indicating whether two specified nodes are connected.  Pass in the values contained in each of the two nodes.
