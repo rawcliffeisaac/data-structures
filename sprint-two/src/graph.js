@@ -1,94 +1,60 @@
 // Instantiate a new graph
 var Graph = function() {
-  this.counter = 0;
   this.storage = {};
 };
 
-//{counter: 0, storage: {0:{value: node}}}
-
+//{storage: {[value]: {value: value, edges: {}} [edges]}
+//
 // Add a node to the graph, passing in the node's value.
 Graph.prototype.addNode = function(node) {
-  this.storage[this.counter] = {value: node, edges: [] };
-  this.counter++;
+  this.storage[node] = {value: node, edges: {}};
 };
 
 // Return a boolean value indicating if the value passed to contains is represented in the graph.
 Graph.prototype.contains = function(node) {
-  for (var key in this.storage) {
-    if (this.storage[key].value === node) {
-      return true;
-    }
+  if (this.storage[node]) {
+    return true;
   }
   return false;
 };
 
 // Removes a node from the graph.
 Graph.prototype.removeNode = function(node) {
-  for (let key in this.storage) {
-    if (this.storage[key].value === node) {
-      let currNode = this.storage[key];
-      for (let i = 0; i < currNode.edges.length; i++) {
-        let currEdge = currNode.edges[i];
-        for (let j = 0; j < this.storage[currEdge].edges.length; j++) {
-          if (this.storage[currEdge].edges[j] === currNode) {
-            this.storage[currEdge].edges.splice(j, 1);
-            break;
-          }
-        }
-      }
-      delete this.storage[key];
-    }
+  for (let key in this.storage[node].edges) {
+    this.removeEdge(node, this.storage[node].edges[key]);
   }
+  delete this.storage[node];
 };
 
 // Returns a boolean indicating whether two specified nodes are connected.  Pass in the values contained in each of the two nodes.
 Graph.prototype.hasEdge = function(fromNode, toNode) {
-  let partner1Has = false;
-  let partner2Has = false;
-  var edgePair1;
-  var edgePair2;
-  for (let key in this.storage) {
-    if (this.storage[key].value === fromNode) {
-      edgePair1 = key;
-    }
-    if (this.storage[key].value === toNode) {
-      edgePair2 = key;
-    }
+  if (this.storage[fromNode] === undefined || this.storage[toNode] === undefined) {
+    return false;
   }
-  if (this.storage[edgePair1].edges.indexOf(edgePair2) > -1) {
-    partner1Has = true;
-  }
-  if (this.storage[edgePair2].edges.indexOf(edgePair1) > -1) {
-    partner2Has = true;
-  }
-  return (partner1Has && partner2Has);
+  let fromNodeHas = this.storage[fromNode].edges[toNode] !== undefined;
+  let toNodeHas = this.storage[toNode].edges[fromNode] !== undefined;
+  return (fromNodeHas && toNodeHas);
 };
 
 // Connects two nodes in a graph by adding an edge between them.
 Graph.prototype.addEdge = function(fromNode, toNode) {
-  var edgePair1;
-  var edgePair2;
-  for (let key in this.storage) {
-    if (this.storage[key].value === fromNode) {
-      edgePair1 = key;
-    }
-    if (this.storage[key].value === toNode) {
-      edgePair2 = key;
-    }
-    if (edgePair1 && edgePair2) {
-      this.storage[edgePair1].edges.push(edgePair2);
-      this.storage[edgePair2].edges.push(edgePair1);
-    }
+  if (this.storage[fromNode] && this.storage[toNode]) {
+    this.storage[fromNode].edges[toNode] = toNode;
+    this.storage[toNode].edges[fromNode] = fromNode;
   }
 };
 
 // Remove an edge between any two specified (by value) nodes.
 Graph.prototype.removeEdge = function(fromNode, toNode) {
-
+  delete this.storage[fromNode].edges[toNode];
+  delete this.storage[toNode].edges[fromNode];
 };
 
 // Pass in a callback which will be executed on each node of the graph.
 Graph.prototype.forEachNode = function(cb) {
+  for (let key in this.storage) {
+    cb(this.storage[key].value);
+  }
 };
 
 /*

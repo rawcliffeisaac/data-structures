@@ -51,6 +51,7 @@ describe('graph', function() {
     graph.addEdge(5, 4);
     expect(graph.hasEdge(4, 5)).to.equal(true);
     graph.removeNode(5);
+    console.log(JSON.stringify(graph));
     expect(graph.hasEdge(4, 5)).to.equal(false);
   });
 
