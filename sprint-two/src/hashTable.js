@@ -1,23 +1,46 @@
 
 
 var HashTable = function() {
-  this._limit = 8;
-  this._storage = LimitedArray(this._limit);
+  this.limit = 8;
+  this.count = 0;
+  this.storage = LimitedArray(this.limit);
 };
 
 HashTable.prototype.insert = function(k, v) {
-  var index = getIndexBelowMaxForKey(k, this._limit);
+  this.count++;
+  if ((this.count / this.limit) >= .75) {
+    this.rehash();
+  }
+  var index = getIndexBelowMaxForKey(k, this.limit);
+  let newTuple = [k, v];
+  if (this.storage[index] === undefined) {
+    this.storage[index] = newTuple;
+  } else {
+    if (Array.isArray(this.storage[index][0])) {
+      this.storage[index].push(newTuple);
+    } else {
+      let oldTuple = this.storage[index];
+      let newBucket = [oldTuple, newTuple];
+      this.storage[index] = newBucket;
+    }
+  }
 };
 
 HashTable.prototype.retrieve = function(k) {
-  var index = getIndexBelowMaxForKey(k, this._limit);
+  var index = getIndexBelowMaxForKey(k, this.limit);
 };
 
 HashTable.prototype.remove = function(k) {
-  var index = getIndexBelowMaxForKey(k, this._limit);
+  var index = getIndexBelowMaxForKey(k, this.limit);
 };
 
+//we designated this vv
+HashTable.prototype.rehash = function() {
+  // need method of keeping track of empty buckets?
+  // if storage length is less than 25 but greter than 8, rehash by half
 
+  // if storage length is more than 25, rehash by doubling
+};
 
 /*
  * Complexity: What is the time complexity of the above functions?
