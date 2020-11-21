@@ -18,16 +18,37 @@ HashTable.prototype.insert = function(k, v) {
   } else {
     if (Array.isArray(this.storage[index][0])) {
       this.storage[index].push(newTuple);
+      for (let i = 0; i < this.storage[index].length; i++) {
+        if (this.storage[index][i][0] === k) {
+          this.storage[index][i][1] = v;
+        }
+      }
     } else {
-      let oldTuple = this.storage[index];
-      let newBucket = [oldTuple, newTuple];
-      this.storage[index] = newBucket;
+      if (this.storage[index][0] === k) {
+        this.storage[index][1] = v;
+      } else {
+        let oldTuple = this.storage[index];
+        let newBucket = [oldTuple, newTuple];
+        this.storage[index] = newBucket;
+      }
     }
   }
 };
 
 HashTable.prototype.retrieve = function(k) {
   var index = getIndexBelowMaxForKey(k, this.limit);
+  if (this.storage[index] === undefined) {
+    return;
+  }
+  if (this.storage[index][0] === k) {
+    return this.storage[index][1];
+  } else {
+    for (let i = 0; i < this.storage[index].length; i++) {
+      if (this.storage[index][i][0] === k) {
+        return this.storage[index][i][1];
+      }
+    }
+  }
 };
 
 HashTable.prototype.remove = function(k) {
@@ -40,6 +61,9 @@ HashTable.prototype.remove = function(k) {
         this.storage[index].splice(i, 1);
         break;
       }
+    }
+    if (this.storage[index][1] === undefined) {
+      this.storage[index] = this.storage[index][0];
     }
   }
   this.count--;
