@@ -32,6 +32,20 @@ HashTable.prototype.retrieve = function(k) {
 
 HashTable.prototype.remove = function(k) {
   var index = getIndexBelowMaxForKey(k, this.limit);
+  if (this.storage[index][0] === k) {
+    this.storage[index] = undefined;
+  } else {
+    for (let i = 0; i < this.storage[index].length; i++) {
+      if (this.storage[index][i][0] === k) {
+        this.storage[index].splice(i, 1);
+        break;
+      }
+    }
+  }
+  this.count--;
+  if ((this.count / this.limit) <= .25) {
+    this.rehash;
+  }
 };
 
 //we designated this vv
